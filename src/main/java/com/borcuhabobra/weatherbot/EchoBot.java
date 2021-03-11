@@ -52,7 +52,6 @@ public class EchoBot extends TelegramLongPollingBot {
                     sendMsg(userMessage, "SHO NASTROIT?");
                     break;
                 default:
-
                         try {
                             sendMsg(userMessage, Weather.getWeather(userMessage.getText(), model));
                         } catch (IOException e) {
