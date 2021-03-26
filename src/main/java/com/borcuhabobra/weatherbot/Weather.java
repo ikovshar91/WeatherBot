@@ -2,6 +2,7 @@ package com.borcuhabobra.weatherbot;
 
 import netscape.javascript.JSObject;
 import org.glassfish.jersey.server.Uri;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -19,7 +20,7 @@ public class Weather {
 
         String API_CALL_TEMPLATE = "https://api.openweathermap.org/data/2.5/weather?q=";
         String city = "";
-        String API_KEY_TEMPLATE = "&appid=b8a1b7610d9f6e7a3f3a9c44ecfe9ba6";
+        String API_KEY_TEMPLATE = "&units=metric&appid=b8a1b7610d9f6e7a3f3a9c44ecfe9ba6";
         String urlString = API_CALL_TEMPLATE + message + API_KEY_TEMPLATE;
         URL url = new URL(urlString);
 
@@ -27,12 +28,6 @@ public class Weather {
 
         connection.setRequestMethod("GET");
         connection.setRequestProperty("User-Agent", "Mozilla/5.0");
-
-        int responseCode = connection.getResponseCode();
-
-        if (responseCode == 404) {
-            throw new IllegalArgumentException();
-        }
 
         BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         String inputLine;
@@ -45,7 +40,26 @@ public class Weather {
 
         in.close();
 
-       return response.toString();
+        JSONObject object = new JSONObject(response.toString());
+        model.setName(object.getString("name"));
+
+        JSONObject main = object.getJSONObject("main");
+        model.setTemp(main.getDouble("temp"));
+        model.setHumidity(main.getDouble("humidity"));
+
+        JSONArray getArray = object.getJSONArray("weather");
+        for (int i = 0; i < getArray.length();i++){
+            JSONObject obj = getArray.getJSONObject(i);
+            model.setIcon((String) obj.get("icon"));
+            model.setMain((String) obj.get("main"));
+        }
+
+       return "City: " + model.getName() + "\n" +
+               "Temperature: "+ model.getTemp() + "C"+ "\n" +
+               "Humidity: " + model.getHumidity() +"%" + "\n"+
+               "Main: " + model.getMain() + "\n"+
+                "http://openweathermap.org/img/wn/" + model.getIcon()+".png";
+
     }
 
 }
