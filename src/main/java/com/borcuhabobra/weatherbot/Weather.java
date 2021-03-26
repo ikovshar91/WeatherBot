@@ -29,6 +29,12 @@ public class Weather {
         connection.setRequestMethod("GET");
         connection.setRequestProperty("User-Agent", "Mozilla/5.0");
 
+       // int responseCode = connection.getResponseCode();
+
+        //if (responseCode == 404) {
+          //  throw new IllegalArgumentException();
+        //}
+
         BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         String inputLine;
 
